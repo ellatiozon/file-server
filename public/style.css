@@ -1,0 +1,70 @@
+body {
+  font-family: Arial, sans-serif;
+  background: #f3e8ff; /* light purple background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+
+.container {
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0px 4px 12px rgba(102, 51, 153, 0.3); /* purple shadow */
+  text-align: center;
+  width: 350px;
+}
+
+h1 {
+  margin-bottom: 20px;
+  color: #663399; /* rebeccapurple */
+}
+
+input[type="file"] {
+  margin: 15px auto;
+  padding: 8px;
+  border: 2px dashed #7b5fcf; /* medium purple */
+  border-radius: 8px;
+  background: #f9f5ff; /* very light purple */
+  cursor: pointer;
+  width: 100%;
+}
+
+button {
+  background: #7b5fcf; /* medium purple */
+  color: #fff;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.3s ease;
+  margin-top: 10px;
+  width: 100%;
+}
+
+button:hover {
+  background: #5a3ea0; /* darker purple */
+}
+
+.message {
+  margin-top: 15px;
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.message:empty {
+  display: none;
+}
+
+/* Note: :contains() is not supported in CSS, so use JS or classes for coloring messages */
+
+.message.success {
+  color: #2e7d32; /* green */
+}
+
+.message.error {
+  color: #d32f2f; /* red */
+}

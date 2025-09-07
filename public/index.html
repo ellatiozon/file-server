@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Node.js File Server</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Welcome to the Node.js File Server</h1>
+    <h2>Try to Upload Images, ONLY IMAGES!</h2>
+
+    <!-- Message area -->
+    <div id="message"></div>
+
+    <form action="/upload" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" accept="image/*" required>
+        <button type="submit">Upload Image</button>
+    </form>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const msg = params.get("msg");
+        const messageDiv = document.getElementById("message");
+
+        if (msg === "success") {
+            messageDiv.textContent = "✅ File uploaded successfully!";
+            messageDiv.className = "success";
+        } else if (msg === "invalid") {
+            messageDiv.textContent = "❌ Invalid file type. Only JPG, PNG, and GIF allowed.";
+            messageDiv.className = "error";
+        } else if (msg === "error") {
+            messageDiv.textContent = "⚠️ Server error during upload. Try again.";
+            messageDiv.className = "error";
+        }
+    </script>
+</body>
+</html>
