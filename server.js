@@ -6,7 +6,6 @@ const formidable = require("formidable");
 const uploadDir = path.join(__dirname, "uploads");
 const publicDir = path.join(__dirname, "public");
 
-// Ensure upload directory exists
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir);
 }
@@ -25,7 +24,6 @@ function serveStaticFile(res, filePath, contentType) {
 
 const server = http.createServer((req, res) => {
   if (req.method === "GET" && (req.url === "/" || req.url.startsWith("/?"))) {
-    // Serve index.html for root or with query params
     serveStaticFile(res, path.join(publicDir, "index.html"), "text/html");
   }
 
@@ -76,7 +74,6 @@ const server = http.createServer((req, res) => {
         return;
       }
 
-      // Save file with original filename (overwrite if exists)
       const newPath = path.join(uploadDir, fileName);
       fs.rename(tempPath, newPath, (err) => {
         if (err) {
@@ -87,7 +84,6 @@ const server = http.createServer((req, res) => {
           return;
         }
 
-        // Redirect with success message and filename for preview
         res.writeHead(302, {
           Location:
             "/?msg=" +
@@ -108,16 +104,13 @@ const server = http.createServer((req, res) => {
     serveStaticFile(res, path.join(publicDir, "banner.png"), "image/jpeg");
   }
 
-  // Serve uploaded files from /uploads folder at /uploads/filename
   else if (req.method === "GET" && req.url.startsWith("/uploads/")) {
     const filePath = path.join(uploadDir, decodeURIComponent(req.url.replace("/uploads/", "")));
-    // Basic security check: file must be inside uploadDir
     if (!filePath.startsWith(uploadDir)) {
       res.writeHead(403, { "Content-Type": "text/plain" });
       res.end("Access denied");
       return;
     }
-    // Determine content type by extension
     const ext = path.extname(filePath).toLowerCase();
     let contentType = "application/octet-stream";
     if (ext === ".jpg" || ext === ".jpeg") contentType = "image/jpeg";

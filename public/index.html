@@ -22,7 +22,6 @@
   </div>
 
   <script>
-    // Parse URL parameters
     const params = new URLSearchParams(window.location.search);
     const msg = params.get('msg');
     const type = params.get('type');
@@ -44,7 +43,6 @@
       const ext = file.split('.').pop().toLowerCase();
 
       if (['jpg', 'jpeg', 'png'].includes(ext)) {
-        // Show image preview
         const img = document.createElement('img');
         img.src = '/uploads/' + encodeURIComponent(file);
         img.alt = 'Uploaded Image';
@@ -53,7 +51,6 @@
         img.style.boxShadow = '0 4px 12px rgba(102, 51, 153, 0.2)';
         previewEl.appendChild(img);
       } else if (ext === 'pdf') {
-        // Show PDF link
         const link = document.createElement('a');
         link.href = '/uploads/' + encodeURIComponent(file);
         link.textContent = 'View uploaded PDF';

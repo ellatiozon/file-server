@@ -1,6 +1,6 @@
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: #f3e8ff; /* light purple background */
+  background: #f3e8ff;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -12,14 +12,14 @@ body {
   background: #ffffff;
   padding: 30px 40px 40px 40px;
   border-radius: 12px;
-  box-shadow: 0 6px 20px rgba(102, 51, 153, 0.3); /* purple shadow */
+  box-shadow: 0 6px 20px rgba(102, 51, 153, 0.3); 
   text-align: center;
   width: 380px;
   position: relative;
 }
 
 h1 {
-  color: #663399; /* rebeccapurple */
+  color: #663399; 
   margin-bottom: 8px;
 }
 
@@ -30,7 +30,7 @@ p {
   font-weight: 600;
 }
 
-/* Banner image styling */
+
 .banner {
   width: 200px;
   height: 200px;
@@ -43,9 +43,9 @@ p {
 input[type="file"] {
   margin: 15px auto;
   padding: 8px;
-  border: 2px dashed #7b5fcf; /* medium purple */
+  border: 2px dashed #7b5fcf;
   border-radius: 8px;
-  background: #f9f5ff; /* very light purple */
+  background: #f9f5ff;
   cursor: pointer;
   width: 100%;
   font-size: 1rem;
@@ -53,7 +53,7 @@ input[type="file"] {
 }
 
 button {
-  background: #7b5fcf; /* medium purple */
+  background: #7b5fcf;
   color: #fff;
   border: none;
   padding: 12px 20px;
