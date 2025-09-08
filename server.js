@@ -1,111 +1,135 @@
 const http = require("http");
 const fs = require("fs");
 const path = require("path");
-const formidable = require('formidable');
+const formidable = require("formidable");
 
 const uploadDir = path.join(__dirname, "uploads");
+const publicDir = path.join(__dirname, "public");
 
-// Make sure upload folder exists
+// Ensure upload directory exists
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir);
 }
 
-function renderPage(message = "") {
-  return `
-  <!DOCTYPE html>
-  <html lang="en">
-  <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>File Upload Server</title>
-      <link rel="stylesheet" href="/style.css">
-  </head>
-  <body>
-      <div class="container">
-          <h1>Upload a File</h1>
-          <form action="/upload" method="post" enctype="multipart/form-data">
-              <input type="file" name="myFile" required />
-              <button type="submit">Upload</button>
-          </form>
-          <p class="message">${message}</p>
-      </div>
-  </body>
-  </html>`;
+function serveStaticFile(res, filePath, contentType) {
+  fs.readFile(filePath, (err, data) => {
+    if (err) {
+      res.writeHead(404, { "Content-Type": "text/plain" });
+      res.end("Not found");
+    } else {
+      res.writeHead(200, { "Content-Type": contentType });
+      res.end(data);
+    }
+  });
 }
 
 const server = http.createServer((req, res) => {
-  if (req.method === "GET" && req.url === "/") {
-    res.writeHead(200, { "Content-Type": "text/html" });
-    res.end(renderPage());
+  if (req.method === "GET" && (req.url === "/" || req.url.startsWith("/?"))) {
+    // Serve index.html for root or with query params
+    serveStaticFile(res, path.join(publicDir, "index.html"), "text/html");
   }
 
   else if (req.method === "POST" && req.url === "/upload") {
-    const form = new formidable.IncomingForm({ multiples: false, uploadDir, keepExtensions: true });
+    const form = new formidable.IncomingForm({
+      multiples: false,
+      uploadDir,
+      keepExtensions: true,
+    });
 
     form.parse(req, (err, fields, files) => {
       if (err) {
-        res.writeHead(500, { "Content-Type": "text/html" });
-        res.end(renderPage("⚠️ Upload error"));
+        res.writeHead(302, {
+          Location: "/?msg=" + encodeURIComponent("⚠️ Upload error") + "&type=error",
+        });
+        res.end();
         return;
       }
 
       const uploadedFile = files.myFile;
 
-      // Defensive check in case no file
       if (!uploadedFile || !uploadedFile[0]) {
-        res.writeHead(400, { "Content-Type": "text/html" });
-        res.end(renderPage("⚠️ No file uploaded"));
+        res.writeHead(302, {
+          Location: "/?msg=" + encodeURIComponent("⚠️ No file uploaded") + "&type=error",
+        });
+        res.end();
         return;
       }
 
-      const fileData = uploadedFile[0]; // Formidable v3+ returns array
+      const fileData = uploadedFile[0];
       const fileName = (fileData.originalFilename || "").toLowerCase();
       const tempPath = fileData.filepath;
 
-      // Only allow certain extensions
       const allowedExt = [".jpg", ".jpeg", ".png", ".pdf"];
-      const isValid = allowedExt.some(ext => fileName.endsWith(ext));
+      const isValid = allowedExt.some((ext) => fileName.endsWith(ext));
 
       if (!isValid) {
         if (tempPath && fs.existsSync(tempPath)) {
-          fs.unlinkSync(tempPath); // delete invalid file safely
+          fs.unlinkSync(tempPath);
         }
-        res.writeHead(400, { "Content-Type": "text/html" });
-        res.end(renderPage("❌ Invalid format. Only JPG, JPEG, PNG, PDF allowed."));
+        res.writeHead(302, {
+          Location:
+            "/?msg=" +
+            encodeURIComponent("Invalid file format. Only JPG, JPEG, PNG, PDF allowed.") +
+            "&type=error",
+        });
+        res.end();
         return;
       }
 
-      // Save file
+      // Save file with original filename (overwrite if exists)
       const newPath = path.join(uploadDir, fileName);
       fs.rename(tempPath, newPath, (err) => {
         if (err) {
-          res.writeHead(500, { "Content-Type": "text/html" });
-          res.end(renderPage("⚠️ File save error"));
+          res.writeHead(302, {
+            Location: "/?msg=" + encodeURIComponent("⚠️ File save error") + "&type=error",
+          });
+          res.end();
           return;
         }
 
-        res.writeHead(200, { "Content-Type": "text/html" });
-        res.end(renderPage("✅ Successfully uploaded!"));
+        // Redirect with success message and filename for preview
+        res.writeHead(302, {
+          Location:
+            "/?msg=" +
+            encodeURIComponent("File successfully uploaded!") +
+            "&type=success&file=" +
+            encodeURIComponent(fileName),
+        });
+        res.end();
       });
     });
   }
 
   else if (req.method === "GET" && req.url === "/style.css") {
-    const cssPath = path.join(__dirname, "public", "style.css");
-    fs.readFile(cssPath, (err, data) => {
-      if (err) {
-        res.writeHead(404, { "Content-Type": "text/plain" });
-        res.end("CSS not found");
-      } else {
-        res.writeHead(200, { "Content-Type": "text/css" });
-        res.end(data);
-      }
-    });
+    serveStaticFile(res, path.join(publicDir, "style.css"), "text/css");
+  }
+
+  else if (req.method === "GET" && req.url === "/banner.png") {
+    serveStaticFile(res, path.join(publicDir, "banner.png"), "image/jpeg");
+  }
+
+  // Serve uploaded files from /uploads folder at /uploads/filename
+  else if (req.method === "GET" && req.url.startsWith("/uploads/")) {
+    const filePath = path.join(uploadDir, decodeURIComponent(req.url.replace("/uploads/", "")));
+    // Basic security check: file must be inside uploadDir
+    if (!filePath.startsWith(uploadDir)) {
+      res.writeHead(403, { "Content-Type": "text/plain" });
+      res.end("Access denied");
+      return;
+    }
+    // Determine content type by extension
+    const ext = path.extname(filePath).toLowerCase();
+    let contentType = "application/octet-stream";
+    if (ext === ".jpg" || ext === ".jpeg") contentType = "image/jpeg";
+    else if (ext === ".png") contentType = "image/png";
+    else if (ext === ".pdf") contentType = "application/pdf";
+
+    serveStaticFile(res, filePath, contentType);
   }
 
   else {
     res.writeHead(404, { "Content-Type": "text/html" });
-    res.end(renderPage("⚠️ Page not found"));
+    res.end("<h1>⚠️ Page not found</h1>");
   }
 });
 

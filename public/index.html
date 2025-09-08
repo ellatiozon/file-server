@@ -1,38 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Node.js File Server</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>File Upload Server</title>
+  <link rel="stylesheet" href="/style.css" />
 </head>
 <body>
-    <h1>Welcome to the Node.js File Server</h1>
-    <h2>Try to Upload Images, ONLY IMAGES!</h2>
-
-    <!-- Message area -->
-    <div id="message"></div>
-
+  <div class="container">
+    <img src="/banner.png" alt="Banner" class="banner" />
+    <h1>Welcome to my File Server.js</h1>
+    <p>by: ella mari</p>
+    <h1>Upload a File</h1>
     <form action="/upload" method="post" enctype="multipart/form-data">
-        <input type="file" name="file" accept="image/*" required>
-        <button type="submit">Upload Image</button>
+      <input type="file" name="myFile" required />
+      <button type="submit">Upload</button>
     </form>
+    <p class="message" id="message"></p>
 
-    <script>
-        const params = new URLSearchParams(window.location.search);
-        const msg = params.get("msg");
-        const messageDiv = document.getElementById("message");
+    <div id="preview" style="margin-top: 20px;"></div>
+  </div>
 
-        if (msg === "success") {
-            messageDiv.textContent = "✅ File uploaded successfully!";
-            messageDiv.className = "success";
-        } else if (msg === "invalid") {
-            messageDiv.textContent = "❌ Invalid file type. Only JPG, PNG, and GIF allowed.";
-            messageDiv.className = "error";
-        } else if (msg === "error") {
-            messageDiv.textContent = "⚠️ Server error during upload. Try again.";
-            messageDiv.className = "error";
-        }
-    </script>
+  <script>
+    // Parse URL parameters
+    const params = new URLSearchParams(window.location.search);
+    const msg = params.get('msg');
+    const type = params.get('type');
+    const file = params.get('file');
+
+    const messageEl = document.getElementById('message');
+    const previewEl = document.getElementById('preview');
+
+    if (msg) {
+      messageEl.textContent = msg;
+      if (type === 'success') {
+        messageEl.classList.add('success');
+      } else if (type === 'error') {
+        messageEl.classList.add('error');
+      }
+    }
+
+    if (file && type === 'success') {
+      const ext = file.split('.').pop().toLowerCase();
+
+      if (['jpg', 'jpeg', 'png'].includes(ext)) {
+        // Show image preview
+        const img = document.createElement('img');
+        img.src = '/uploads/' + encodeURIComponent(file);
+        img.alt = 'Uploaded Image';
+        img.style.maxWidth = '100%';
+        img.style.borderRadius = '10px';
+        img.style.boxShadow = '0 4px 12px rgba(102, 51, 153, 0.2)';
+        previewEl.appendChild(img);
+      } else if (ext === 'pdf') {
+        // Show PDF link
+        const link = document.createElement('a');
+        link.href = '/uploads/' + encodeURIComponent(file);
+        link.textContent = 'View uploaded PDF';
+        link.target = '_blank';
+        link.style.fontWeight = '600';
+        link.style.color = '#663399';
+        previewEl.appendChild(link);
+      }
+    }
+  </script>
 </body>
 </html>

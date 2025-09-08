@@ -1,5 +1,5 @@
 body {
-  font-family: Arial, sans-serif;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background: #f3e8ff; /* light purple background */
   display: flex;
   justify-content: center;
@@ -10,16 +10,34 @@ body {
 
 .container {
   background: #ffffff;
-  padding: 30px;
+  padding: 30px 40px 40px 40px;
   border-radius: 12px;
-  box-shadow: 0px 4px 12px rgba(102, 51, 153, 0.3); /* purple shadow */
+  box-shadow: 0 6px 20px rgba(102, 51, 153, 0.3); /* purple shadow */
   text-align: center;
-  width: 350px;
+  width: 380px;
+  position: relative;
 }
 
 h1 {
-  margin-bottom: 20px;
   color: #663399; /* rebeccapurple */
+  margin-bottom: 8px;
+}
+
+p {
+  color: #5a3ea0;
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+/* Banner image styling */
+.banner {
+  width: 200px;
+  height: 200px;
+  border-radius: 10px;
+  object-fit: cover;
+  margin-bottom: 25px;
+  box-shadow: 0 4px 12px rgba(102, 51, 153, 0.2);
 }
 
 input[type="file"] {
@@ -30,6 +48,8 @@ input[type="file"] {
   background: #f9f5ff; /* very light purple */
   cursor: pointer;
   width: 100%;
+  font-size: 1rem;
+  color: #663399;
 }
 
 button {
@@ -39,32 +59,9 @@ button {
   padding: 12px 20px;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 1rem;
+  font-size: 1.1rem;
   transition: background 0.3s ease;
   margin-top: 10px;
   width: 100%;
-}
-
-button:hover {
-  background: #5a3ea0; /* darker purple */
-}
-
-.message {
-  margin-top: 15px;
-  font-size: 1rem;
-  font-weight: bold;
-}
-
-.message:empty {
-  display: none;
-}
-
-/* Note: :contains() is not supported in CSS, so use JS or classes for coloring messages */
-
-.message.success {
-  color: #2e7d32; /* green */
-}
-
-.message.error {
-  color: #d32f2f; /* red */
+  font-weight: 600;
 }
